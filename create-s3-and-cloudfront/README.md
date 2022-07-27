@@ -1,4 +1,4 @@
-A simple CloudFormation to create AWS S3 bucket
+A simple CloudFormation for S3 + CloudFront, suitable to host static content and SPA web app
 
 # How to use this file?
 
