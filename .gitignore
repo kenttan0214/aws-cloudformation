@@ -2,3 +2,4 @@
 node_modules
 slack-notification/node_modules
 slack-notification/.serverless
+slack-notification/.build
