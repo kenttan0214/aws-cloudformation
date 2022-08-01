@@ -1,0 +1,63 @@
+service: slack-notification
+
+plugins:
+  - serverless-webpack
+  - serverless-prune-plugin
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+    excludeFiles: src/**/*.test.ts # Provide a glob for files to ignore
+    packagerOptions:
+      scripts:
+        - rm -rf node_modules/aws-sdk
+        - rm -rf node_modules/@types/aws-lambda
+
+  # pruning of all but the most recent version(s) of managed functions from AWS
+  prune:
+    automatic: true
+    number: 1
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ${env:STAGE}
+  region: ${env:REGION}
+  timeout: 10
+  memorySize: 128
+  logRetentionInDays: 7 # Set the default RetentionInDays for a CloudWatch LogGroup
+  environment:
+    SLACK_WEBHOOK: ${env:SLACK_WEBHOOK}
+
+# AWS CloudFormation
+resources:
+  Resources:
+    CodeBuildSNS:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: foo-notification
+        TopicName: foo-notification
+    CodeBuildSNSPolicy:
+      Type: AWS::SNS::TopicPolicy
+      Properties:
+        PolicyDocument:
+          Id: AWSCodeStarNotifications_publish
+          Version: '2012-10-17'
+          Statement:
+          - Sid: foo-notification-statement
+            Effect: Allow
+            Principal:
+              Service: codestar-notifications.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref CodeBuildSNS
+        Topics:
+          - !Ref CodeBuildSNS
+
+functions:
+  slack:
+    handler: src/slack.handler
+    events:
+      - sns:
+          arn: !Ref CodeBuildSNS
+          topicName: foo-notification

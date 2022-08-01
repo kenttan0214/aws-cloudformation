@@ -1,0 +1,87 @@
+# This is AWS Cloudformation Template
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Foo Project Deployment Job
+
+Parameters:
+  ProjectName:
+    AllowedPattern: '^[a-zA-Z0-9-_]*$'
+    Description: >-
+      Name to give the CodeBuild Project. For this sample, use the same name as
+      your repository.
+    MaxLength: '255'
+    MinLength: '2'
+    Type: String
+  RepositoryUrl:
+    Description: >-
+      HTTPS Clone URL of the repository in GitHub. Example:
+      'https://github.com/owner/repo.git'
+    Type: String
+  BuildSpecPath: # eg. codebuild/deploy-dev.yml
+    Description: CodeBuild BuildSpec Path in Repo
+    Type: String
+  ServiceRole:
+    Description: Service role name
+    Type: String
+  Repository:
+    Description: GitHub Repository Name
+    Type: String
+
+Resources:
+  CodeBuildProject:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Name: !Ref ProjectName
+      Description: Release Job
+      ServiceRole: !Join
+        - ''
+        - - 'arn:aws:iam::'
+          - !Ref 'AWS::AccountId'
+          - ':role/'
+          - !Ref ServiceRole
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+      Source:
+        Auth:
+          Type: OAUTH
+        Location: !Ref RepositoryUrl
+        Type: GITHUB
+        BuildSpec: !Ref BuildSpecPath
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/tags/v.*
+      TimeoutInMinutes: '30'
+      # Tags:
+      #   - Key: 'Foo'
+      #     Value: !Ref Foo
+      #   - Key: 'Bar'
+      #     Value: !Ref Bar
+  Notifictaion:
+    Type: AWS::CodeStarNotifications::NotificationRule
+    Properties:
+      Name: !Join ['-', ['codestar', !Ref 'ProjectName']]
+      DetailType: FULL
+      EventTypeIds:
+        - codebuild-project-build-state-failed
+        - codebuild-project-build-state-succeeded
+        - codebuild-project-build-state-in-progress
+        - codebuild-project-build-state-stopped
+      Resource: !GetAtt CodeBuildProject.Arn
+      Targets:
+        # use common SNS topic for all deployment job
+        - TargetType: SNS
+          TargetAddress:
+            Fn::Join:
+              - ':'
+              - - 'arn:aws:sns'
+                - !Ref 'AWS::Region'
+                - !Ref 'AWS::AccountId'
+                - 'foo-deployment-notification' # update the SNS topic name
