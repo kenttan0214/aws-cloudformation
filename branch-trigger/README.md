@@ -19,7 +19,6 @@ ParameterKey=ProjectName,ParameterValue=foo-deploy-test \
 ParameterKey=RepositoryUrl,ParameterValue=https://github.com/foo-api \
 ParameterKey=BuildSpecPath,ParameterValue=deploy-test.yml \
 ParameterKey=BranchName,ParameterValue=main \
-ParameterKey=CodeBuildDesc,ParameterValue="Foo Deployment Job" \
 ParameterKey=Repository,ParameterValue=foo-api \
 ParameterKey=ServiceRole,ParameterValue=foo-code-build-role
 ```

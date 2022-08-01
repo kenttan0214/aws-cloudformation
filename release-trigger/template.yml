@@ -20,17 +20,11 @@ Parameters:
   BuildSpecPath: # eg. codebuild/deploy-dev.yml
     Description: CodeBuild BuildSpec Path in Repo
     Type: String
-  BranchName: # eg. main
-    Description: Branch name to trigger the codebuild
-    Type: String
-  ServiceRole: # foo-codebuild-role
+  ServiceRole:
     Description: Service role name
     Type: String
   Repository:
     Description: GitHub Repository Name
-    Type: String
-  Environment:
-    Description: Environment
     Type: String
 
 Resources:
@@ -38,7 +32,7 @@ Resources:
     Type: 'AWS::CodeBuild::Project'
     Properties:
       Name: !Ref ProjectName
-      Description: 'foo codebuild job'
+      Description: Release Job
       ServiceRole: !Join
         - ''
         - - 'arn:aws:iam::'
@@ -62,18 +56,15 @@ Resources:
         FilterGroups:
           - - Type: EVENT
               Pattern: PUSH
-            # - Type: FILE_PATH
-            #   Pattern: README.md$|infrastructure.*
-            #   ExcludeMatchedPattern: true
             - Type: HEAD_REF
-              Pattern: !Join ['', ['^refs/heads/', !Ref 'BranchName']]
+              Pattern: ^refs/tags/v.*
       TimeoutInMinutes: '30'
       # Tags:
       #   - Key: 'Foo'
       #     Value: !Ref Foo
       #   - Key: 'Bar'
       #     Value: !Ref Bar
-  Notifictaion: # Trigger a SNS to push codebuild status to slack/email based on SNS setup
+  Notifictaion:
     Type: AWS::CodeStarNotifications::NotificationRule
     Properties:
       Name: !Join ['-', ['codestar', !Ref 'ProjectName']]
