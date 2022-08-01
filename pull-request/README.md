@@ -1,4 +1,4 @@
-Codebuild job with a Github branch trigger
+Codebuild job run when a Pull request created/updated/reopened
 
 # How to use this file?
 
@@ -10,16 +10,14 @@ Codebuild job with a Github branch trigger
 ### command
 ```
 aws --region us-east-1 cloudformation update-stack \
---stack-name foo-deploy-test \
+--stack-name foo-pull-request \
 --template-body file://template.yml \
 --tags \
-Key=Environment,Value=test \
+Key=Environment,Value=Test \
 --parameters \
-ParameterKey=ProjectName,ParameterValue=foo-deploy-test \
-ParameterKey=RepositoryUrl,ParameterValue=https://github.com/foo-api \
-ParameterKey=BuildSpecPath,ParameterValue=deploy-test.yml \
-ParameterKey=BranchName,ParameterValue=main \
-ParameterKey=CodeBuildDesc,ParameterValue="Foo Deployment Job" \
+ParameterKey=ProjectName,ParameterValue=foo-pull-request \
 ParameterKey=Repository,ParameterValue=foo-api \
+ParameterKey=RepositoryUrl,ParameterValue=https://github.com/foo-api \
+ParameterKey=BuildSpecPath,ParameterValue=pull-request.yml \
 ParameterKey=ServiceRole,ParameterValue=foo-code-build-role
 ```
