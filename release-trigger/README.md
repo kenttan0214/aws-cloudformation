@@ -1,4 +1,4 @@
-Codebuild job with a Github branch trigger
+Codebuild job with a Github release trigger
 
 # How to use this file?
 
@@ -18,7 +18,6 @@ Environment=Test \
 ProjectName=foo-deploy-test \
 RepositoryUrl=https://github.com/foo-api \
 BuildSpecPath=pull-request.yml \
-BranchName=main \
 Repository=foo-api \
 ServiceRole=foo-code-build-role
 ```
@@ -34,7 +33,6 @@ Key=Environment,Value=test \
 ParameterKey=ProjectName,ParameterValue=foo-deploy-test \
 ParameterKey=RepositoryUrl,ParameterValue=https://github.com/foo-api \
 ParameterKey=BuildSpecPath,ParameterValue=deploy-test.yml \
-ParameterKey=BranchName,ParameterValue=main \
 ParameterKey=Repository,ParameterValue=foo-api \
 ParameterKey=ServiceRole,ParameterValue=foo-code-build-role
 ```

@@ -9,6 +9,21 @@ Codebuild job run when a Pull request created/updated/reopened
 
 ### command
 ```
+aws --region us-east-1 cloudformation deploy \
+--stack-name foo-pull-request \
+--template-file ./template.yml \
+--tags \
+Environment=Test \
+--parameter-overrides \
+ProjectName=foo-pull-request \
+RepositoryUrl=https://github.com/foo-api \
+BuildSpecPath=pull-request.yml \
+Repository=foo-api \
+ServiceRole=foo-code-build-role
+```
+
+### command
+```
 aws --region us-east-1 cloudformation update-stack \
 --stack-name foo-pull-request \
 --template-body file://template.yml \
