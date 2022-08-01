@@ -1,0 +1,28 @@
+{
+  "name": "slack-notification",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "sls deploy",
+    "package": "sls package",
+    "package:local": "env-cmd -e local sls package",
+    "sls:doctor": "sls doctor",
+    "tsc:compile": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^3.2.10"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0",
+    "serverless": "^3.21.0",
+    "serverless-prune-plugin": "^2.0.1",
+    "serverless-webpack": "^5.8.0",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4",
+    "webpack": "^5.74.0",
+    "webpack-node-externals": "^3.0.0"
+  }
+}
